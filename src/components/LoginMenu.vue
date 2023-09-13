@@ -50,7 +50,9 @@ export default {
         this.dataFile.loginGuest({ username: this.username }).tab =
           "character-creation";
       } else {
-        alert("Username must be at least 3 characters long.");
+        this.dataFile.loginGuest({ username: "Default username" }).tab =
+          "character-creation";
+        // alert("Username must be at least 3 characters long.");
       }
     },
   },

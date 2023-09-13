@@ -5,15 +5,23 @@
         <p>Welcome</p>
         <p>{{ name }}!</p>
       </h1>
+      <button
+        class="CC-confirm"
+        @click="confirmStats"
+      >
+        Confirm Stats?
+      </button>
     </header>
     <section id="character-sheet-selection">
       <h2>Make your character</h2>
       <button
+        class="CC-randomise"
         @click="randomiseClick"
         :disabled="rerolls < 1"
       >
-        Randomise</button
-      >Rolls left: {{ rerolls }}
+        Randomise
+      </button>
+      <p class="CC-rolls">Rerolls left: {{ rerolls }}</p>
       <section id="CC-SS">
         <p>
           <span>Strength:</span>
@@ -118,6 +126,18 @@ export default {
       this.charisma = getStat(normalStat);
       this.luck = getStat(luckStat);
     },
+    confirmStats() {
+      this.dataFile.henry({
+        strength: this.strength,
+        endurance: this.endurance,
+        agility: this.agility,
+        perception: this.perception,
+        intelligence: this.intelligence,
+        wisdom: this.wisdom,
+        charisma: this.charisma,
+        luck: this.luck,
+      }).tab = "game-menu";
+    },
   },
 };
 </script>
@@ -130,7 +150,6 @@ export default {
   background-image: url("../assets/CS-hill-s.jpeg");
 }
 header {
-  display: inline-block;
   width: 50%;
   height: 100%;
   background-color: transparent;
@@ -151,11 +170,18 @@ header {
   }
   header {
     width: 100%;
-    height: 50%;
+    height: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
   }
   #character-sheet-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 15% 15% 4fr 1fr;
     width: 100%;
-    height: 50%;
+    height: 55%;
   }
   h1 {
     text-align: center;
@@ -165,22 +191,73 @@ header {
   h1 > p {
     margin: 0;
   }
+  .CC-confirm {
+    width: fit-content;
+    height: fit-content;
+    margin-right: 0.7em;
+    padding: 0.7em;
+    border-radius: max(100vh, 100vw);
+    background: linear-gradient(
+      157deg,
+      rgb(78, 160, 247, 0.8) 0%,
+      rgb(95, 230, 239, 0.9) 23%,
+      rgb(78, 160, 247, 0.8) 45%,
+      rgb(95, 230, 239, 0.9) 68%,
+      rgb(78, 160, 247, 0.8) 90%
+    );
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+  h2 {
+    grid-area: 1 / 1 / 2 / 3;
+    text-align: center;
+    font-size: 2em;
+  }
+  .CC-randomise {
+    grid-area: 2 / 1 / 3 / 2;
+    align-self: center;
+    justify-self: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.7em;
+    padding: 0.7em;
+    border-radius: max(100vh, 100vw);
+    background: linear-gradient(
+      157deg,
+      rgb(24, 123, 47) 0%,
+      rgb(64, 243, 100) 23%,
+      rgb(24, 123, 47) 45%,
+      rgb(64, 243, 100) 68%,
+      rgb(24, 123, 47) 90%
+    );
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+  .CC-rolls {
+    grid-area: 2 / 2 / 3 / 3;
+    display: inline-block;
+    align-self: center;
+    justify-self: left;
+    text-align: center;
+    margin-left: 1.1em;
+    font-weight: bold;
+    font-size: 1.5em;
+  }
   #CC-SS {
+    grid-area: 3 / 1 / 4 / 3;
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
   #CC-SS > p {
     display: flex;
     justify-content: space-between;
-    margin: 0.4em;
-    padding: 0.7em;
-    border-radius: 1em;
-    font-size: 1.2em;
-    background-color: green;
-    color: white;
-    font-weight: bold;
   }
   #CC-total {
+    grid-area: 4 / 1 / 5 / 3;
+  }
+  #CC-total,
+  #CC-SS > p {
     margin: 0.4em;
     padding: 0.7em;
     border-radius: 1em;

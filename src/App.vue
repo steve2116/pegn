@@ -3,6 +3,7 @@ import Title from "./components/Title.vue";
 import CharacterCreation from "./components/CharacterCreation.vue";
 import { gameData } from "../types.d";
 import LoginMenu from "./components/LoginMenu.vue";
+import GameMenu from "./components/GameMenu.vue";
 </script>
 
 <template>
@@ -19,6 +20,10 @@ import LoginMenu from "./components/LoginMenu.vue";
       v-if="currentTab === 'character-creation'"
       :dataFile="(dataFile as gameData)"
     />
+    <GameMenu
+      v-if="currentTab === 'game-menu'"
+      :dataFile="(dataFile as gameData)"
+    />
   </div>
 </template>
 
@@ -29,6 +34,7 @@ export default {
     Title,
     LoginMenu,
     CharacterCreation,
+    GameMenu,
   },
   data() {
     return {
