@@ -56,7 +56,7 @@ export default {
 };
 </script>
 
-<style scopes>
+<style scoped>
 #pegn {
   position: absolute;
   top: 0;
