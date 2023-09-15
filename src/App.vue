@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Title from "./components/Title.vue";
 import CharacterCreation from "./components/CharacterCreation.vue";
-import { gameData } from "../types.d";
 import LoginMenu from "./components/LoginMenu.vue";
 import GameMenu from "./components/GameMenu.vue";
+import CharacterInfo from "./components/CharacterInfo.vue";
 </script>
 
 <template>
@@ -24,10 +24,16 @@ import GameMenu from "./components/GameMenu.vue";
       v-if="currentTab === 'game-menu'"
       :dataFile="(dataFile as gameData)"
     />
+    <CharacterInfo
+      v-if="currentTab === 'character-info'"
+      :dataFile="(dataFile as gameData)"
+    />
   </div>
 </template>
 
 <script lang="ts">
+import { gameData } from "../types.d";
+
 export default {
   name: "App",
   components: {
@@ -35,6 +41,7 @@ export default {
     LoginMenu,
     CharacterCreation,
     GameMenu,
+    CharacterInfo,
   },
   data() {
     return {

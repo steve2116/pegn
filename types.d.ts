@@ -1,4 +1,9 @@
-type tabT = "title" | "login-menu" | "character-creation" | "game-menu";
+type tabT =
+  | "title"
+  | "login-menu"
+  | "character-creation"
+  | "game-menu"
+  | "character-info";
 
 type stats =
   | "strength"

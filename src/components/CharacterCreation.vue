@@ -12,7 +12,7 @@
         Confirm Stats?
       </button>
     </header>
-    <section id="character-sheet-selection">
+    <main>
       <h2>Make your character</h2>
       <button
         class="CC-randomise"
@@ -57,7 +57,7 @@
         </p>
       </section>
       <p id="CC-total">Total points: {{ sumStats }}</p>
-    </section>
+    </main>
   </section>
 </template>
 
@@ -154,7 +154,7 @@ header {
   height: 100%;
   background-color: transparent;
 }
-#character-sheet-selection {
+main {
   display: inline-block;
   position: relative;
   width: 50%;
@@ -176,7 +176,7 @@ header {
     justify-content: space-around;
     align-items: center;
   }
-  #character-sheet-selection {
+  main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 15% 15% 4fr 1fr;
