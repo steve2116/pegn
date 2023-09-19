@@ -4,6 +4,7 @@ import CharacterCreation from "./components/CharacterCreation.vue";
 import LoginMenu from "./components/LoginMenu.vue";
 import GameMenu from "./components/GameMenu.vue";
 import CharacterInfo from "./components/CharacterInfo.vue";
+import GameMaps from "./components/GameMaps.vue";
 </script>
 
 <template>
@@ -28,6 +29,10 @@ import CharacterInfo from "./components/CharacterInfo.vue";
       v-if="currentTab === 'character-info'"
       :dataFile="(dataFile as gameData)"
     />
+    <GameMaps
+      v-if="currentTab === 'game-maps'"
+      :dataFile="(dataFile as gameData)"
+    />
   </div>
 </template>
 
@@ -42,6 +47,7 @@ export default {
     CharacterCreation,
     GameMenu,
     CharacterInfo,
+    GameMaps,
   },
   data() {
     return {
@@ -56,7 +62,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 #pegn {
   position: absolute;
   top: 0;
@@ -66,5 +72,19 @@ export default {
   width: 100vw;
   max-width: 2250px;
   overflow: hidden;
+  font-size: calc(1.5vh + 1.5vw);
+}
+.back-button {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  border-radius: 1em;
+  cursor: pointer;
+  background: rgba(207, 155, 82, 0.708);
+}
+.back-button > img {
+  background: transparent;
+  height: calc(2em * 342 / 317);
+  width: 2em;
 }
 </style>

@@ -1,9 +1,12 @@
+import CryptoJS from "crypto-js";
+
 type tabT =
   | "title"
   | "login-menu"
   | "character-creation"
   | "game-menu"
-  | "character-info";
+  | "character-info"
+  | "game-maps";
 
 type stats =
   | "strength"
@@ -25,7 +28,7 @@ export interface characterSheetT {
 }
 
 export class gameData {
-  private navigation: { current: tabT; previous: tabT | null };
+  private navigation: { tabStack: tabStack };
   private user: {
     name: string;
     stats: Record<stats, number>;
@@ -35,8 +38,7 @@ export class gameData {
 
   constructor() {
     this.navigation = {
-      current: "title",
-      previous: null,
+      tabStack: new tabStack("title"),
     };
     this.user = {
       name: "default name",
@@ -56,12 +58,19 @@ export class gameData {
   }
 
   get tab() {
-    return this.navigation.current;
+    return this.navigation.tabStack.peak;
   }
 
   set tab(tab: tabT) {
-    this.navigation.previous = this.navigation.current;
-    this.navigation.current = tab;
+    this.navigation.tabStack.next(tab);
+  }
+
+  get check() {
+    return this.navigation.tabStack.previous;
+  }
+
+  backTab(): tabT | null {
+    return this.navigation.tabStack.previous();
   }
 
   get name() {
@@ -77,6 +86,7 @@ export class gameData {
     if (this.user.new) {
       this.user.stats = stats;
       this.user.new = false;
+      this.navigation.tabStack.new();
     }
     return this;
   }
@@ -86,5 +96,63 @@ export class gameData {
       username: this.user.name,
       stats: this.user.stats,
     };
+  }
+
+  save(): string {
+    const encrypt = (text: string): string => {
+      return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text));
+    };
+    return encrypt(
+      JSON.stringify({
+        tab: this.navigation.tabStack.peak,
+        user: this.user,
+        game: this.game,
+      })
+    );
+  }
+
+  load(data: string): void {
+    const decrypt = (data: string): string => {
+      return CryptoJS.enc.Base64.parse(data).toString(CryptoJS.enc.Utf8);
+    };
+    const { tab, user, game } = JSON.parse(decrypt(data));
+    this.user = user;
+    this.game = game;
+    this.tab = tab;
+  }
+}
+
+class tabStack {
+  private tabs: Array<tabT>;
+
+  constructor(startingTab?: tabT) {
+    this.tabs = startingTab ? [startingTab] : [];
+  }
+
+  get length(): number {
+    return this.tabs.length;
+  }
+
+  get check() {
+    if (this.length < 2) return null;
+    return this.tabs[this.tabs.length - 2];
+  }
+
+  previous(): tabT | null {
+    if (this.length === 0) return null;
+    return this.tabs.pop();
+  }
+
+  get peak(): tabT | null {
+    if (this.length === 0) return null;
+    return this.tabs[this.tabs.length - 1];
+  }
+
+  next(tab: tabT): void {
+    this.tabs.push(tab);
+  }
+
+  new(): void {
+    this.tabs = [];
   }
 }

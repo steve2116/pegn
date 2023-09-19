@@ -71,7 +71,7 @@ export default {
 }
 h1 {
   font-size: 3rem;
-  margin: 1.5em 0 2.5em 0;
+  margin-top: 1.5em;
   text-align: center;
 }
 form {
@@ -114,9 +114,10 @@ input {
 }
 button {
   box-sizing: border-box;
-  width: 160px;
-  height: 65px;
+  width: calc(2.5em * 160 / 65);
+  height: 3.5em;
   margin: 0.5em;
+  padding: 0.5em;
   border-radius: 1em;
   font-size: 1.2em;
   font-weight: bold;

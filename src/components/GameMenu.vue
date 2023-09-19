@@ -1,5 +1,19 @@
+<script lang="ts" setup>
+import BackButton from "../parts/BackButton.vue";
+</script>
+
 <template>
   <section id="game-menu">
+    <div
+      id="saving-game"
+      :class="savingDiv"
+    >
+      Saving
+    </div>
+    <BackButton
+      :dataFile="dataFile"
+      v-show="tabNull"
+    />
     <header>
       <h1>The Game!!!</h1>
       <p>
@@ -12,8 +26,8 @@
     </header>
     <main>
       <button
-        class="GM-button one disabled"
-        disabled
+        class="GM-button one"
+        @click="dataFile.tab = 'game-maps'"
       >
         Map
       </button>
@@ -36,8 +50,8 @@
         Character Info
       </button>
       <button
-        class="GM-button five disabled"
-        disabled
+        class="GM-button five"
+        @click="saveClick"
       >
         Save Game
       </button>
@@ -56,11 +70,20 @@ import { gameData } from "../../types.d";
 
 export default {
   name: "GameMenu",
+  components: {
+    BackButton,
+  },
   props: {
     dataFile: {
       type: gameData,
       required: true,
     },
+  },
+  data() {
+    return {
+      saving: false,
+      saveDivCounter: 0,
+    };
   },
   computed: {
     characterStats() {
@@ -82,6 +105,31 @@ export default {
           3
       );
     },
+    savingDiv() {
+      return this.saving ? "saving" : "not-saving";
+    },
+    tabNull() {
+      return this.dataFile.check === null;
+    },
+  },
+  methods: {
+    saveClick() {
+      if (!this.saving && this.saveDivCounter === 0) {
+        this.saving = true;
+        console.log("Saving...");
+        const timer = setInterval(() => {
+          if (this.saveDivCounter > 2) {
+            this.saving = false;
+            console.log("This is your save file: ", this.dataFile.save());
+            clearInterval(timer);
+            this.saveDivCounter = 0;
+            return;
+          }
+          this.saving = !this.saving;
+          this.saveDivCounter++;
+        }, 750);
+      }
+    },
   },
 };
 </script>
@@ -102,12 +150,11 @@ export default {
 header {
   box-sizing: border-box;
   width: 100%;
-  height: 20%;
-  margin-bottom: 5%;
+  height: 22%;
+  margin-bottom: 3%;
   padding: 1em;
   border-radius: 1em;
   background-color: rgba(71, 202, 121, 0.703);
-  font-size: 1.2rem;
 }
 h1 {
   font-size: 3rem;
@@ -172,5 +219,25 @@ main {
 }
 .disabled {
   background-color: grey;
+}
+#saving-game {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 0.5em;
+  border-radius: 1em;
+}
+.saving {
+  border: 1px solid rgb(187, 187, 187);
+  background-color: rgb(227, 227, 227);
+  transition: all 0.75s ease-in-out;
+}
+.not-saving {
+  color: transparent;
+  background-color: transparent;
+  border: 2px solid transparent;
+  transition: all 0.75s ease-in-out;
 }
 </style>

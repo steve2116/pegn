@@ -1,14 +1,10 @@
+<script lang="ts" setup>
+import BackButton from "../parts/BackButton.vue";
+</script>
+
 <template>
   <section id="character-info">
-    <button
-      class="back-button"
-      @click="dataFile.tab = 'game-menu'"
-    >
-      <img
-        src="../assets/arrow-head.png"
-        alt="back arrow"
-      />
-    </button>
+    <BackButton :dataFile="dataFile" />
     <header>
       <h1>Character Information</h1>
     </header>
@@ -35,6 +31,9 @@ import { gameData } from "../../types.d";
 
 export default {
   name: "CharacterInfo",
+  components: {
+    BackButton,
+  },
   props: {
     dataFile: {
       type: gameData,
@@ -60,19 +59,6 @@ export default {
   padding: 1em;
   font-family: cursive;
 }
-.back-button {
-  position: absolute;
-  top: 1em;
-  left: 1em;
-  border-radius: 1em;
-  cursor: pointer;
-  background: rgba(207, 155, 82, 0.708);
-}
-.back-button > img {
-  background: transparent;
-  height: calc(2em * 342 / 317);
-  width: 2em;
-}
 header {
   width: 100%;
   height: 18%;
@@ -85,6 +71,7 @@ h1 {
 main {
   width: 100%;
   height: 82%;
+  padding-top: 0.5em;
   font-family: "Macondo", cursive;
 }
 h2 {

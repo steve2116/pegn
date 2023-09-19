@@ -152,6 +152,7 @@ export default {
 header {
   width: 50%;
   height: 100%;
+  padding: 0.5em;
   background-color: transparent;
 }
 main {
@@ -164,29 +165,34 @@ main {
 
 @media (max-width: 600px) and (min-height: 100vw) {
   #character-creation {
+    box-sizing: border-box;
     display: block;
     background-image: url("../assets/CS-hill-s.jpeg");
     background-position: 14% 60%;
   }
   header {
+    box-sizing: border-box;
     width: 100%;
-    height: 45%;
+    height: 35%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
   }
   main {
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 15% 15% 4fr 1fr;
     width: 100%;
-    height: 55%;
+    height: 65%;
+    padding: 0.5em;
+    font-size: 0.9em;
   }
   h1 {
     text-align: center;
-    margin: 30% 0 0 0;
-    font-size: 3.5em;
+    margin: 0.3em 0 0 0;
+    font-size: 3em;
   }
   h1 > p {
     margin: 0;
@@ -212,6 +218,7 @@ main {
     grid-area: 1 / 1 / 2 / 3;
     text-align: center;
     font-size: 2em;
+    margin: auto 0;
   }
   .CC-randomise {
     grid-area: 2 / 1 / 3 / 2;
@@ -232,7 +239,7 @@ main {
       rgb(24, 123, 47) 90%
     );
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1.3em;
   }
   .CC-rolls {
     grid-area: 2 / 2 / 3 / 3;
@@ -242,9 +249,10 @@ main {
     text-align: center;
     margin-left: 1.1em;
     font-weight: bold;
-    font-size: 1.5em;
+    font-size: 1.7em;
   }
   #CC-SS {
+    box-sizing: border-box;
     grid-area: 3 / 1 / 4 / 3;
     display: grid;
     grid-template-columns: 1fr 1fr;

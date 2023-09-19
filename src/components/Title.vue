@@ -60,17 +60,17 @@ section {
   background-position: center;
 }
 h1 {
-  font-size: 3rem;
+  font-size: 3em;
   text-align: center;
-  padding: 1rem;
+  padding: 1em;
 }
 button {
-  margin: 1rem;
+  margin: 1em;
   border: none;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  padding: 1em;
+  border-radius: 1.5em;
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.5em;
 }
 .bg {
   transition: all 1.5s ease-in-out;
