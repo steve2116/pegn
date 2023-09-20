@@ -4,14 +4,8 @@ import BackButton from "../parts/BackButton.vue";
 
 <template>
   <section id="game-menu">
-    <div
-      id="saving-game"
-      :class="savingDiv"
-    >
-      Saving
-    </div>
     <BackButton
-      :dataFile="dataFile"
+      :backTab="backClick"
       v-show="tabNull"
     />
     <header>
@@ -51,7 +45,7 @@ import BackButton from "../parts/BackButton.vue";
       </button>
       <button
         class="GM-button five"
-        @click="saveClick"
+        @click="(saveClick as Function)()"
       >
         Save Game
       </button>
@@ -78,12 +72,10 @@ export default {
       type: gameData,
       required: true,
     },
-  },
-  data() {
-    return {
-      saving: false,
-      saveDivCounter: 0,
-    };
+    saveClick: {
+      type: Function,
+      required: true,
+    },
   },
   computed: {
     characterStats() {
@@ -105,30 +97,13 @@ export default {
           3
       );
     },
-    savingDiv() {
-      return this.saving ? "saving" : "not-saving";
-    },
     tabNull() {
       return this.dataFile.check === null;
     },
   },
   methods: {
-    saveClick() {
-      if (!this.saving && this.saveDivCounter === 0) {
-        this.saving = true;
-        console.log("Saving...");
-        const timer = setInterval(() => {
-          if (this.saveDivCounter > 2) {
-            this.saving = false;
-            console.log("This is your save file: ", this.dataFile.save());
-            clearInterval(timer);
-            this.saveDivCounter = 0;
-            return;
-          }
-          this.saving = !this.saving;
-          this.saveDivCounter++;
-        }, 750);
-      }
+    backClick() {
+      this.dataFile.backTab();
     },
   },
 };
@@ -219,25 +194,5 @@ main {
 }
 .disabled {
   background-color: grey;
-}
-#saving-game {
-  position: absolute;
-  top: 1em;
-  right: 1em;
-  font-size: 1.5em;
-  font-weight: bold;
-  padding: 0.5em;
-  border-radius: 1em;
-}
-.saving {
-  border: 1px solid rgb(187, 187, 187);
-  background-color: rgb(227, 227, 227);
-  transition: all 0.75s ease-in-out;
-}
-.not-saving {
-  color: transparent;
-  background-color: transparent;
-  border: 2px solid transparent;
-  transition: all 0.75s ease-in-out;
 }
 </style>

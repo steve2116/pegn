@@ -4,7 +4,7 @@ import BackButton from "../parts/BackButton.vue";
 
 <template>
   <section id="character-info">
-    <BackButton :dataFile="dataFile" />
+    <BackButton :backTab="backClick" />
     <header>
       <h1>Character Information</h1>
     </header>
@@ -38,6 +38,11 @@ export default {
     dataFile: {
       type: gameData,
       required: true,
+    },
+  },
+  methods: {
+    backClick() {
+      this.dataFile.backTab();
     },
   },
 };

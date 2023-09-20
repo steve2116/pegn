@@ -4,7 +4,7 @@ import BackButton from "../parts/BackButton.vue";
 
 <template>
   <section id="game-maps">
-    <BackButton :dataFile="dataFile" />
+    <BackButton :backTab="backClick" />
     <header>
       <h1>Map</h1>
       <section id="map-key">
@@ -18,7 +18,12 @@ import BackButton from "../parts/BackButton.vue";
       </section>
     </header>
     <main>
-      <button class="city">Cleodores</button>
+      <button
+        class="city"
+        @click="dataFile.tab = 'map-city-cleodores'"
+      >
+        Cleodores
+      </button>
     </main>
   </section>
 </template>
@@ -32,6 +37,11 @@ export default {
     dataFile: {
       type: gameData,
       required: true,
+    },
+  },
+  methods: {
+    backClick() {
+      this.dataFile.backTab();
     },
   },
 };

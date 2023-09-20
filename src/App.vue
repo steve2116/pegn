@@ -5,10 +5,18 @@ import LoginMenu from "./components/LoginMenu.vue";
 import GameMenu from "./components/GameMenu.vue";
 import CharacterInfo from "./components/CharacterInfo.vue";
 import GameMaps from "./components/GameMaps.vue";
+import CityCleodores from "./maps/cities/CityCleodores.vue";
 </script>
 
 <template>
   <div id="pegn">
+    <div
+      id="saving-game"
+      :class="savingDiv"
+    >
+      Saving
+    </div>
+    <!-- main screens -->
     <Title
       v-if="currentTab === 'title'"
       :dataFile="(dataFile as gameData)"
@@ -24,6 +32,7 @@ import GameMaps from "./components/GameMaps.vue";
     <GameMenu
       v-if="currentTab === 'game-menu'"
       :dataFile="(dataFile as gameData)"
+      :saveClick="saveClick"
     />
     <CharacterInfo
       v-if="currentTab === 'character-info'"
@@ -31,6 +40,11 @@ import GameMaps from "./components/GameMaps.vue";
     />
     <GameMaps
       v-if="currentTab === 'game-maps'"
+      :dataFile="(dataFile as gameData)"
+    />
+    <!-- maps -->
+    <CityCleodores
+      v-if="currentTab === 'map-city-cleodores'"
       :dataFile="(dataFile as gameData)"
     />
   </div>
@@ -48,15 +62,41 @@ export default {
     GameMenu,
     CharacterInfo,
     GameMaps,
+    CityCleodores,
   },
   data() {
     return {
       dataFile: new gameData(),
+      saving: false,
+      saveDivCounter: 0,
     };
   },
   computed: {
     currentTab() {
       return this.dataFile.tab;
+    },
+    savingDiv() {
+      return this.saving ? "saving" : "not-saving";
+    },
+  },
+  methods: {
+    saveClick() {
+      if (!this.saving && this.saveDivCounter === 0) {
+        this.saving = true;
+        console.log("Saving...");
+        const savedFile = this.dataFile.save();
+        const timer = setInterval(() => {
+          if (this.saveDivCounter > 2) {
+            this.saving = false;
+            console.log("This is your save file: ", savedFile);
+            clearInterval(timer);
+            this.saveDivCounter = 0;
+            return;
+          }
+          this.saving = !this.saving;
+          this.saveDivCounter++;
+        }, 750);
+      }
     },
   },
 };
@@ -86,5 +126,25 @@ export default {
   background: transparent;
   height: calc(2em * 342 / 317);
   width: 2em;
+}
+#saving-game {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 0.5em;
+  border-radius: 1em;
+}
+.saving {
+  border: 1px solid rgb(187, 187, 187);
+  background-color: rgb(227, 227, 227);
+  transition: all 0.75s ease-in-out;
+}
+.not-saving {
+  color: transparent;
+  background-color: transparent;
+  border: 2px solid transparent;
+  transition: all 0.75s ease-in-out;
 }
 </style>

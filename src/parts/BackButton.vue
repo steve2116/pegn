@@ -1,7 +1,7 @@
 <template>
   <button
     class="back-button"
-    @click="backClick"
+    @click="(backTab as Function)()"
   >
     <img
       src="../assets/arrow-head.png"
@@ -11,19 +11,12 @@
 </template>
 
 <script lang="ts">
-import { gameData } from "../../types.d";
-
 export default {
   name: "BackButton",
   props: {
-    dataFile: {
-      type: gameData,
+    backTab: {
+      type: Function,
       required: true,
-    },
-  },
-  methods: {
-    backClick() {
-      this.dataFile.backTab();
     },
   },
 };

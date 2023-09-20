@@ -6,7 +6,8 @@ type tabT =
   | "character-creation"
   | "game-menu"
   | "character-info"
-  | "game-maps";
+  | "game-maps"
+  | "map-city-cleodores";
 
 type stats =
   | "strength"
