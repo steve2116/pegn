@@ -23,9 +23,51 @@ type loginGuestT = {
   username: string;
 };
 
-export interface characterSheetT {
+interface characterSheetT {
   username: string;
   stats: Record<stats, number>;
+}
+
+interface gameDataGameT {
+  locations: {
+    cleodores: {
+      mayorsOffice: {
+        value: number;
+        max: number;
+        unlocked: boolean;
+      };
+      mercenaryGuild: {
+        value: number;
+        max: number;
+        unlocked: boolean;
+      };
+      jobsBoard: {
+        value: number;
+        max: number;
+        unlocked: boolean;
+      };
+      marketplace: {
+        value: number;
+        max: number;
+        unlocked: boolean;
+      };
+      guardsTower: {
+        value: number;
+        max: number;
+        unlocked: boolean;
+      };
+      cityGate: {
+        value: number;
+        max: number;
+        unlocked: boolean;
+      };
+      church: {
+        value: number;
+        max: number;
+        unlocked: boolean;
+      };
+    };
+  };
 }
 
 export class gameData {
@@ -35,7 +77,7 @@ export class gameData {
     stats: Record<stats, number>;
     new: boolean;
   };
-  private game;
+  private game: gameDataGameT;
 
   constructor() {
     this.navigation = {
@@ -55,7 +97,47 @@ export class gameData {
       },
       new: true,
     };
-    this.game = {};
+    this.game = {
+      locations: {
+        cleodores: {
+          mayorsOffice: {
+            value: 0,
+            max: 0,
+            unlocked: false,
+          },
+          mercenaryGuild: {
+            value: 0,
+            max: 1,
+            unlocked: true,
+          },
+          jobsBoard: {
+            value: 0,
+            max: 0,
+            unlocked: false,
+          },
+          marketplace: {
+            value: 0,
+            max: 0,
+            unlocked: false,
+          },
+          guardsTower: {
+            value: 0,
+            max: 0,
+            unlocked: false,
+          },
+          cityGate: {
+            value: 0,
+            max: 0,
+            unlocked: false,
+          },
+          church: {
+            value: 0,
+            max: 0,
+            unlocked: false,
+          },
+        },
+      },
+    };
   }
 
   get tab() {
@@ -120,6 +202,44 @@ export class gameData {
     this.user = user;
     this.game = game;
     this.tab = tab;
+  }
+
+  locations(
+    place: keyof gameDataGameT["locations"],
+    area: string,
+    index: boolean = false
+  ): number | null {
+    const { value, max } = this.game.locations[place][area] || {
+      value: 0,
+      max: 0,
+    };
+    if (value >= max) return null;
+    else if (index) this.game.locations[place][area].value++;
+    return value;
+  }
+
+  unlocked(path: string): boolean {
+    return (
+      path.split("/").reduce((acc, curr) => {
+        return acc[curr];
+      }, this.game.locations) || { unlocked: false }
+    ).unlocked;
+  }
+
+  unlock(path: string): boolean {
+    return path.split("/").reduce((acc, curr, ind, arr) => {
+      if (ind === arr.length - 1) {
+        if (acc[curr]) {
+          acc[curr].unlocked = true;
+          return true;
+        } else return false;
+      }
+      return acc[curr];
+    }, this.game.locations);
+  }
+
+  get testingtesting() {
+    return this.game;
   }
 }
 

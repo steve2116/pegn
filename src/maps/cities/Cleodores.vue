@@ -8,7 +8,7 @@ import SpeechBox from "../../parts/SpeechBox.vue";
     <SpeechBox
       v-if="speech"
       :textCycle="speech"
-      :onComplete="() => (speech = false)"
+      :onComplete="stopTalking"
     />
     <BackButton :backTab="backClick" />
     <header>
@@ -16,39 +16,59 @@ import SpeechBox from "../../parts/SpeechBox.vue";
     </header>
     <main>
       <button
-        class="cleodores-option disabled"
-        disabled
+        :class="`cleodores-option${
+          dataFile.unlocked('cleodores/mayorsOffice') ? '' : ' disabled'
+        }`"
+        :disabled="!dataFile.unlocked('cleodores/mayorsOffice')"
       >
         Mayor's Office
       </button>
       <button
-        class="cleodores-option"
+        :class="`cleodores-option${
+          dataFile.unlocked('cleodores/mercenaryGuild') ? '' : ' disabled'
+        }`"
         @click="mercenaryGuildClick"
-        :disabled="!!speech"
+        :disabled="!!speech || !dataFile.unlocked('cleodores/mercenaryGuild')"
       >
         Mercenary Guild
       </button>
       <button
-        class="cleodores-option disabled"
-        disabled
+        :class="`cleodores-option${
+          dataFile.unlocked('cleodores/jobsBoard') ? '' : ' disabled'
+        }`"
+        :disabled="!dataFile.unlocked('cleodores/jobsBoard')"
+      >
+        Job's Board
+      </button>
+      <button
+        :class="`cleodores-option${
+          dataFile.unlocked('cleodores/marketplace') ? '' : ' disabled'
+        }`"
+        :disabled="!dataFile.unlocked('cleodores/marketplace')"
       >
         Marketplace
       </button>
       <button
-        class="cleodores-option disabled"
-        disabled
+        :class="`cleodores-option${
+          dataFile.unlocked('cleodores/guardsTower') ? '' : ' disabled'
+        }`"
+        :disabled="!dataFile.unlocked('cleodores/guardsTower')"
       >
         Guard's Tower
       </button>
       <button
-        class="cleodores-option disabled"
-        disabled
+        :class="`cleodores-option${
+          dataFile.unlocked('cleodores/cityGate') ? '' : ' disabled'
+        }`"
+        :disabled="!dataFile.unlocked('cleodores/cityGate')"
       >
         City Gate
       </button>
       <button
-        class="cleodores-option disabled"
-        disabled
+        :class="`cleodores-option${
+          dataFile.unlocked('cleodores/church') ? '' : ' disabled'
+        }`"
+        :disabled="!dataFile.unlocked('cleodores/church')"
       >
         Church
       </button>
@@ -58,9 +78,10 @@ import SpeechBox from "../../parts/SpeechBox.vue";
 
 <script lang="ts">
 import { gameData } from "../../../types.d";
+import { MercGuild } from "../../gameLogic/Cleodores";
 
 export default {
-  name: "CityCleodores",
+  name: "Cleodores",
   components: {
     BackButton,
   },
@@ -82,24 +103,12 @@ export default {
       this.dataFile.backTab();
     },
     mercenaryGuildClick() {
-      this.speech = [
-        {
-          speaker: "Receptionist",
-          text: "Welcome to the Mercenary Guild!",
-        },
-        {
-          speaker: "Receptionist",
-          text: "We have a variety of jobs available for you to take.",
-        },
-        {
-          speaker: "Receptionist",
-          text: "It seems you have already been signed up, so you can get started immediately.",
-        },
-        {
-          speaker: "Receptionist",
-          text: "Please take a look at our jobs board.",
-        },
-      ];
+      console.log(this.dataFile.testingtesting);
+      this.speech = MercGuild(this.dataFile);
+    },
+    stopTalking() {
+      this.speech = false;
+      this.dataFile.unlock("cleodores/jobsBoard");
     },
   },
 };
@@ -116,14 +125,14 @@ export default {
 header {
   box-sizing: border-box;
   width: 100%;
-  height: 25%;
+  height: 30%;
   text-align: center;
   overflow: hidden;
 }
 main {
   box-sizing: border-box;
   width: 100%;
-  height: 75%;
+  height: 70%;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;

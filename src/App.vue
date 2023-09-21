@@ -5,7 +5,7 @@ import LoginMenu from "./components/LoginMenu.vue";
 import GameMenu from "./components/GameMenu.vue";
 import CharacterInfo from "./components/CharacterInfo.vue";
 import GameMaps from "./components/GameMaps.vue";
-import CityCleodores from "./maps/cities/CityCleodores.vue";
+import Cleodores from "./maps/cities/Cleodores.vue";
 </script>
 
 <template>
@@ -43,7 +43,7 @@ import CityCleodores from "./maps/cities/CityCleodores.vue";
       :dataFile="(dataFile as gameData)"
     />
     <!-- maps -->
-    <CityCleodores
+    <Cleodores
       v-if="currentTab === 'map-city-cleodores'"
       :dataFile="(dataFile as gameData)"
     />
@@ -62,7 +62,7 @@ export default {
     GameMenu,
     CharacterInfo,
     GameMaps,
-    CityCleodores,
+    Cleodores,
   },
   data() {
     return {
