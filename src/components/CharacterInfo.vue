@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-import BackButton from "../parts/BackButton.vue";
-</script>
-
 <template>
   <section id="character-info">
     <BackButton :backTab="backClick" />
@@ -27,6 +23,8 @@ import BackButton from "../parts/BackButton.vue";
 </template>
 
 <script lang="ts">
+import BackButton from "../parts/BackButton.vue";
+
 import { gameData } from "../../types.d";
 
 export default {

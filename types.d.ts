@@ -19,9 +19,9 @@ type stats =
   | "charisma"
   | "luck";
 
-type loginGuestT = {
+interface loginGuestT {
   username: string;
-};
+}
 
 interface characterSheetT {
   username: string;
@@ -30,45 +30,32 @@ interface characterSheetT {
 
 interface gameDataGameT {
   locations: {
-    cleodores: {
-      mayorsOffice: {
-        value: number;
-        max: number;
-        unlocked: boolean;
-      };
-      mercenaryGuild: {
-        value: number;
-        max: number;
-        unlocked: boolean;
-      };
-      jobsBoard: {
-        value: number;
-        max: number;
-        unlocked: boolean;
-      };
-      marketplace: {
-        value: number;
-        max: number;
-        unlocked: boolean;
-      };
-      guardsTower: {
-        value: number;
-        max: number;
-        unlocked: boolean;
-      };
-      cityGate: {
-        value: number;
-        max: number;
-        unlocked: boolean;
-      };
-      church: {
-        value: number;
-        max: number;
-        unlocked: boolean;
+    [continent: string]: {
+      [country: string]: {
+        [territory: string]: {
+          [city: string]: {
+            [area: string]: number;
+          };
+        };
       };
     };
   };
+  questsCompleted: string;
 }
+
+export type locationActionT =
+  | {
+      type: "none";
+    }
+  | {
+      type: "speech";
+      talk: Array<{ speaker: string; text: string }>;
+    }
+  | {
+      type: "quest";
+      quests: Array<string>;
+      specialQuests: Array<string>;
+    };
 
 export class gameData {
   private navigation: { tabStack: tabStack };
@@ -99,44 +86,27 @@ export class gameData {
     };
     this.game = {
       locations: {
-        cleodores: {
-          mayorsOffice: {
-            value: 0,
-            max: 0,
-            unlocked: false,
-          },
-          mercenaryGuild: {
-            value: 0,
-            max: 1,
-            unlocked: true,
-          },
-          jobsBoard: {
-            value: 0,
-            max: 0,
-            unlocked: false,
-          },
-          marketplace: {
-            value: 0,
-            max: 0,
-            unlocked: false,
-          },
-          guardsTower: {
-            value: 0,
-            max: 0,
-            unlocked: false,
-          },
-          cityGate: {
-            value: 0,
-            max: 0,
-            unlocked: false,
-          },
-          church: {
-            value: 0,
-            max: 0,
-            unlocked: false,
+        hidar: {},
+        midgar: {},
+        migi: {
+          kales: {
+            cleodores: {
+              cleodores: {
+                mayorsOffice: -1,
+                mercenaryGuild: 0,
+                jobsBoard: -1,
+                marketplace: -1,
+                guardsTower: -1,
+                cityGate: -1,
+                church: -1,
+              },
+            },
           },
         },
+        penin: {},
+        isles: {},
       },
+      questsCompleted: "",
     };
   }
 
@@ -149,7 +119,7 @@ export class gameData {
   }
 
   get check() {
-    return this.navigation.tabStack.previous;
+    return this.navigation.tabStack.check;
   }
 
   backTab(): tabT | null {
@@ -194,36 +164,104 @@ export class gameData {
     );
   }
 
-  load(data: string): void {
+  load(data: string): () => void {
     const decrypt = (data: string): string => {
       return CryptoJS.enc.Base64.parse(data).toString(CryptoJS.enc.Utf8);
     };
     const { tab, user, game } = JSON.parse(decrypt(data));
     this.user = user;
     this.game = game;
-    this.tab = tab;
+    return () => this.navigation.tabStack.new();
   }
 
-  locations(
-    place: keyof gameDataGameT["locations"],
-    area: string,
-    index: boolean = false
-  ): number | null {
-    const { value, max } = this.game.locations[place][area] || {
-      value: 0,
-      max: 0,
-    };
-    if (value >= max) return null;
-    else if (index) this.game.locations[place][area].value++;
-    return value;
+  goToLocation(
+    gameDataFiles: jsonDataT,
+    locationString: string
+  ): locationActionT {
+    const {
+      user,
+      game,
+    }: {
+      user: number | null;
+      game: {
+        max: number;
+        unlockedAt: Array<string>;
+        data: Array<{
+          [key: string]: any;
+          type: string;
+          unlocks: Array<string>;
+          progress: Array<string>;
+          relocks: Array<string>;
+        }>;
+      } | null;
+    } = locationString.split("/").reduce(
+      (acc, curr) => ({
+        user: acc.user[curr] || acc.user[curr] === 0 ? acc.user[curr] : null,
+        game: acc.game[curr] ? acc.game[curr] : null,
+      }),
+      { user: this.game.locations, game: gameDataFiles.locations }
+    );
+    if (user === null || game === null) return { type: "none" };
+    else {
+      const data = { ...game.data[game.max < user ? game.max : user] };
+      data.unlocks.forEach((path) => {
+        path.split("/").reduce((acc, curr, ind, arr) => {
+          if (ind === arr.length - 1) {
+            acc[curr]++;
+            return acc[curr];
+          }
+          return acc[curr];
+        }, this.game.locations);
+      });
+      data.progress.forEach((path) => {
+        path.split("/").reduce((acc, curr, ind, arr) => {
+          if (ind === arr.length - 1) {
+            const [place, increment]: [string, string] = curr.split("#");
+            acc[place] += parseInt(increment);
+            return acc[place];
+          } else return acc[curr];
+        }, this.game.locations);
+      });
+      // data.relocks.forEach((path) => {});
+      if (data.type === "quests") {
+        let quests: Array<string> = [];
+        locationString
+          .split("/")
+          .slice(0, -1)
+          .reduce((acc, curr, ind, arr) => {
+            quests = quests.concat(acc[curr].info.quests);
+            return acc[curr];
+          }, gameDataFiles.locations);
+        return {
+          type: "quest",
+          quests,
+          specialQuests: data.specialQuests,
+        };
+      } else if (data.type === "speech") {
+        return { type: "speech", talk: data.talk };
+      } else return { type: "none" };
+    }
   }
 
-  unlocked(path: string): boolean {
+  unlocked(
+    gameDataFiles: { locations: Object; quests: Object },
+    path: string
+  ): boolean {
     return (
-      path.split("/").reduce((acc, curr) => {
-        return acc[curr];
-      }, this.game.locations) || { unlocked: false }
-    ).unlocked;
+      path.split("/").reduce((acc, curr) => acc[curr], gameDataFiles.locations)
+        .unlockedAt as Array<string>
+    ).every((location) => {
+      const newPath = location.split("/");
+      if (newPath.length === 0) return true;
+      else {
+        return newPath.reduce((acc, curr, ind, arr) => {
+          if (ind === arr.length - 1) {
+            const [place, value]: [string, number] = curr.split("-");
+            return acc[place] >= value;
+          } else return acc[curr];
+        }, this.game.locations);
+      }
+    });
   }
 
   unlock(path: string): boolean {
@@ -238,8 +276,12 @@ export class gameData {
     }, this.game.locations);
   }
 
-  get testingtesting() {
-    return this.game;
+  get questsCompleted(): Array<string> {
+    return this.game.questsCompleted.split("-");
+  }
+
+  get all() {
+    return this.navigation.tabStack.all;
   }
 }
 
@@ -248,6 +290,10 @@ class tabStack {
 
   constructor(startingTab?: tabT) {
     this.tabs = startingTab ? [startingTab] : [];
+  }
+
+  get all() {
+    return this.tabs;
   }
 
   get length(): number {
@@ -276,4 +322,185 @@ class tabStack {
   new(): void {
     this.tabs = [];
   }
+}
+
+// enum Locations {
+//   kcea = "Cleodores Earldom",
+//   kcle = "Cleodores",
+// }
+
+// enum Kingdoms {
+//   na = "None",
+//   k = "Kingdom of Kales",
+// }
+
+// enum Weather {
+//   rain = "Rainy",
+//   snow = "Snowy",
+//   trop = "Tropical",
+//   dry = "Dry",
+//   windy = "Windy",
+//   grey = "Grey",
+//   sun = "Sunny",
+// }
+
+// enum Environments {
+//   na = "None",
+//   forest = "Forest",
+//   plains = "Plains",
+//   mountains = "Mountains",
+//   desert = "Desert",
+//   swamp = "Swamp",
+//   jungle = "Jungle",
+//   tundra = "Tundra",
+//   ocean = "Ocean",
+//   volcano = "Volcanic",
+// }
+
+// type Directions =
+//   | "north"
+//   | "south"
+//   | "east"
+//   | "west"
+//   | "north-east"
+//   | "north-west"
+//   | "south-east"
+//   | "south-west";
+
+// enum Religions {
+//   na = "None",
+// }
+
+// enum Races {
+//   h = "Human",
+//   hs = "Humans",
+// }
+
+// interface AreaConstructor {
+//   name: Locations;
+//   territoryOf: Kingdoms;
+//   weather: Weather;
+//   environment: Environments;
+//   bordering: Array<{ name: Locations; direction: Directions }>;
+//   apartOf: Locations;
+//   locatedWithin: Array<Locations>;
+// }
+
+// interface PopulatedLocationConstructor extends AreaConstructor {
+//   population: number;
+//   ReligionsE: Array<Religions>;
+//   occupiedBy: Array<Races>;
+// }
+
+// interface CityConstructor extends PopulatedLocationConstructor {
+//   leadBy: string;
+// }
+
+// class Area {
+//   name: AreaConstructor["name"];
+//   territoryOf: AreaConstructor["territoryOf"];
+//   weather: AreaConstructor["weather"];
+//   environment: AreaConstructor["environment"];
+//   bordering: AreaConstructor["bordering"];
+//   apartOf: AreaConstructor["apartOf"];
+//   locatedWithin: AreaConstructor["locatedWithin"];
+
+//   constructor({
+//     name,
+//     territoryOf,
+//     weather,
+//     environment,
+//     bordering,
+//     apartOf,
+//     locatedWithin,
+//   }: AreaConstructor) {
+//     this.name = name;
+//     this.territoryOf = territoryOf;
+//     this.weather = weather;
+//     this.environment = environment;
+//     this.bordering = bordering.map((place) => ({ ...place }));
+//     this.apartOf = apartOf;
+//     this.locatedWithin = locatedWithin;
+//   }
+// }
+
+// class PopulatedLocation extends Area {
+//   population: PopulatedLocationConstructor["population"];
+//   ReligionsE: PopulatedLocationConstructor["ReligionsE"];
+//   occupiedBy: PopulatedLocationConstructor["occupiedBy"];
+//   constructor(details: PopulatedLocationConstructor) {
+//     super(details);
+//     this.population = details.population;
+//     this.ReligionsE = details.ReligionsE;
+//     this.occupiedBy = details.occupiedBy;
+//   }
+// }
+
+// class City extends PopulatedLocation {
+//   leadBy: CityConstructor["leadBy"];
+
+//   constructor(details: CityConstructor) {
+//     super(details);
+//     this.leadBy = details.leadBy;
+//   }
+// }
+
+export interface questT {
+  title: string;
+  description: string;
+  reward: number;
+  type: string;
+}
+
+interface gameDataInfo {
+  name: string;
+  type: string;
+  weather: string | null;
+  environment: string | null;
+  population: number;
+  religions: Array<string>;
+  occupiedBy: string | null;
+  ruler: string | null;
+  rulingType: string | null;
+  quests: Array<string>;
+}
+
+export interface jsonDataT {
+  locations: {
+    hidar: { info: gameDataInfo };
+    midgar: { info: gameDataInfo };
+    migi: {
+      info: gameDataInfo;
+      kales: {
+        info: gameDataInfo;
+        cleodores: {
+          info: gameDataInfo;
+          cleodores: {
+            info: gameDataInfo;
+            [key in
+              ("mayorsOffice" |
+                "mercenaryGuild" |
+                "jobsBoard" |
+                "marketplace" |
+                "guardsTower" |
+                "cityGate" |
+                "church")]: {
+              max: number;
+              unlockedAt: Array<string>;
+              data: Array<locationActionT>;
+            };
+          };
+        };
+      };
+    };
+    penin: { info: gameDataInfo };
+    isles: { info: gameDataInfo };
+  };
+  quests: {
+    [questId: string]: questT;
+  };
+  loadingMessages: {
+    dyk: Array<string>;
+    tips: Array<string>;
+  };
 }

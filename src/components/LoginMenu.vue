@@ -23,12 +23,19 @@
       <button disabled>Login</button>
       <button disabled>Register</button>
       <button @click="playAsGuest">Play as guest</button>
+      <button
+        @click="playLocal"
+        :disabled="localSave === null"
+      >
+        Local Save
+      </button>
     </section>
   </section>
 </template>
 
 <script lang="ts">
-import { gameData } from "../../types.d";
+import { gameData, jsonDataT } from "../../types.d";
+import { fetchGameDataFiles } from "../utils";
 
 export default {
   name: "LoginMenu",
@@ -37,25 +44,58 @@ export default {
       type: gameData,
       required: true,
     },
+    gameFiles: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
       username: "",
       password: "",
+      localSave: localStorage.getItem("pegn-saveData"),
     };
   },
   methods: {
     playAsGuest() {
       if (this.username.length > 2) {
-        this.dataFile.loginGuest({ username: this.username }).tab =
-          "character-creation";
+        // if (this.localSave) {}
+        new Promise((resolve) => {
+          this.dataFile.loginGuest({ username: this.username });
+          resolve(this.loadGameDataFiles());
+        }).then(() => {
+          this.dataFile.tab = "character-creation";
+        });
       } else {
-        this.dataFile.loginGuest({ username: "Default username" }).tab =
-          "character-creation";
+        new Promise((resolve) => {
+          this.dataFile.loginGuest({ username: "Default username" });
+          resolve(this.loadGameDataFiles());
+        }).then(() => {
+          this.dataFile.tab = "character-creation";
+        });
         // alert("Username must be at least 3 characters long.");
       }
     },
+    playLocal() {
+      new Promise((resolve) => {
+        resolve(this.loadGameDataFiles());
+      })
+        .then(() => this.dataFile.load(this.localSave as string))
+        .then((tabReset) => {
+          tabReset();
+          this.dataFile.tab = "game-menu";
+        });
+    },
+    async loadGameDataFiles() {
+      this.$emit("changeLoading", true);
+      const gameFiles = await fetchGameDataFiles();
+      (this.gameFiles as jsonDataT).locations = gameFiles.locations;
+      (this.gameFiles as jsonDataT).quests = gameFiles.quests;
+      (this.gameFiles as jsonDataT).loadingMessages = gameFiles.loadingMessages;
+      this.$emit("changeLoading", false);
+    },
   },
+  emits: ["changeLoading"],
 };
 </script>
 

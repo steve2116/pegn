@@ -1,12 +1,8 @@
-<script lang="ts" setup>
-import BackButton from "../parts/BackButton.vue";
-</script>
-
 <template>
   <section id="game-menu">
     <BackButton
       :backTab="backClick"
-      v-show="tabNull"
+      v-show="canGoBack"
     />
     <header>
       <h1>The Game!!!</h1>
@@ -60,6 +56,8 @@ import BackButton from "../parts/BackButton.vue";
 </template>
 
 <script lang="ts">
+import BackButton from "../parts/BackButton.vue";
+
 import { gameData } from "../../types.d";
 
 export default {
@@ -97,8 +95,9 @@ export default {
           3
       );
     },
-    tabNull() {
-      return this.dataFile.check === null;
+    canGoBack(): boolean {
+      const currentTab = this.dataFile.check;
+      return !!currentTab && currentTab !== "game-menu";
     },
   },
   methods: {

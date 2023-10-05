@@ -1,13 +1,3 @@
-<script setup lang="ts">
-import Title from "./components/Title.vue";
-import CharacterCreation from "./components/CharacterCreation.vue";
-import LoginMenu from "./components/LoginMenu.vue";
-import GameMenu from "./components/GameMenu.vue";
-import CharacterInfo from "./components/CharacterInfo.vue";
-import GameMaps from "./components/GameMaps.vue";
-import Cleodores from "./maps/cities/Cleodores.vue";
-</script>
-
 <template>
   <div id="pegn">
     <div
@@ -19,39 +9,56 @@ import Cleodores from "./maps/cities/Cleodores.vue";
     <!-- main screens -->
     <Title
       v-if="currentTab === 'title'"
-      :dataFile="(dataFile as gameData)"
+      :data-file="(dataFile as gameData)"
     />
     <LoginMenu
       v-if="currentTab === 'login-menu'"
-      :dataFile="(dataFile as gameData)"
+      :data-file="(dataFile as gameData)"
+      :game-files="(gameFiles as jsonDataT)"
+      @change-loading="(e: boolean) => loading = e"
     />
     <CharacterCreation
       v-if="currentTab === 'character-creation'"
-      :dataFile="(dataFile as gameData)"
+      :data-file="(dataFile as gameData)"
     />
     <GameMenu
       v-if="currentTab === 'game-menu'"
-      :dataFile="(dataFile as gameData)"
-      :saveClick="saveClick"
+      :data-file="(dataFile as gameData)"
+      :save-click="saveClick"
     />
     <CharacterInfo
       v-if="currentTab === 'character-info'"
-      :dataFile="(dataFile as gameData)"
+      :data-file="(dataFile as gameData)"
     />
     <GameMaps
       v-if="currentTab === 'game-maps'"
-      :dataFile="(dataFile as gameData)"
+      :data-file="(dataFile as gameData)"
+    />
+    <!-- loading -->
+    <LoadingScreen
+      v-if="loading"
+      message="Did you know, more people are killed by stairs than sharks per year?"
     />
     <!-- maps -->
     <Cleodores
       v-if="currentTab === 'map-city-cleodores'"
-      :dataFile="(dataFile as gameData)"
+      :data-file="(dataFile as gameData)"
+      :game-files="(gameFiles as jsonDataT)"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { gameData } from "../types.d";
+import Title from "./components/Title.vue";
+import CharacterCreation from "./components/CharacterCreation.vue";
+import LoginMenu from "./components/LoginMenu.vue";
+import GameMenu from "./components/GameMenu.vue";
+import CharacterInfo from "./components/CharacterInfo.vue";
+import GameMaps from "./components/GameMaps.vue";
+import Cleodores from "./maps/cities/Cleodores.vue";
+import LoadingScreen from "./components/LoadingScreen.vue";
+
+import { gameData, jsonDataT } from "../types.d";
 
 export default {
   name: "App",
@@ -63,12 +70,23 @@ export default {
     CharacterInfo,
     GameMaps,
     Cleodores,
+    LoadingScreen,
   },
   data() {
     return {
       dataFile: new gameData(),
       saving: false,
       saveDivCounter: 0,
+      gameFiles: {},
+      loading: false,
+      timer: 0,
+    } as {
+      dataFile: gameData;
+      saving: boolean;
+      saveDivCounter: number;
+      gameFiles: jsonDataT | Record<string, never>;
+      loading: boolean;
+      timer: number;
     };
   },
   computed: {
@@ -83,12 +101,13 @@ export default {
     saveClick() {
       if (!this.saving && this.saveDivCounter === 0) {
         this.saving = true;
-        console.log("Saving...");
+        // console.log("Saving...");
         const savedFile = this.dataFile.save();
         const timer = setInterval(() => {
           if (this.saveDivCounter > 2) {
+            localStorage.setItem("pegn-saveData", savedFile);
             this.saving = false;
-            console.log("This is your save file: ", savedFile);
+            // console.log("This is your save file: ", savedFile);
             clearInterval(timer);
             this.saveDivCounter = 0;
             return;

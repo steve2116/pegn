@@ -137,6 +137,7 @@ export default {
         charisma: this.charisma,
         luck: this.luck,
       }).tab = "game-menu";
+      localStorage.setItem("pegn-saveData", this.dataFile.save());
     },
   },
 };

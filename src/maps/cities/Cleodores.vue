@@ -1,114 +1,221 @@
-<script lang="ts" setup>
-import BackButton from "../../parts/BackButton.vue";
-import SpeechBox from "../../parts/SpeechBox.vue";
-</script>
-
 <template>
   <section id="map-city-cleodores">
+    <BackButton :backTab="backClick" />
     <SpeechBox
-      v-if="speech"
+      v-if="!!speech"
       :textCycle="speech"
       :onComplete="stopTalking"
     />
-    <BackButton :backTab="backClick" />
+
     <header>
       <h1>Cleodores</h1>
     </header>
     <main>
       <button
-        :class="`cleodores-option${
-          dataFile.unlocked('cleodores/mayorsOffice') ? '' : ' disabled'
-        }`"
-        :disabled="!dataFile.unlocked('cleodores/mayorsOffice')"
+        :class="`cleodores-option${unlockedMayor ? '' : ' disabled'}`"
+        :disabled="!!speech || !unlockedMayor"
       >
         Mayor's Office
       </button>
       <button
-        :class="`cleodores-option${
-          dataFile.unlocked('cleodores/mercenaryGuild') ? '' : ' disabled'
-        }`"
+        :class="`cleodores-option${unlockedMercGuild ? '' : ' disabled'}`"
         @click="mercenaryGuildClick"
-        :disabled="!!speech || !dataFile.unlocked('cleodores/mercenaryGuild')"
+        :disabled="!!speech || !unlockedMercGuild"
       >
         Mercenary Guild
       </button>
       <button
-        :class="`cleodores-option${
-          dataFile.unlocked('cleodores/jobsBoard') ? '' : ' disabled'
-        }`"
-        :disabled="!dataFile.unlocked('cleodores/jobsBoard')"
+        :class="`cleodores-option${unlockedJobsBoard ? '' : ' disabled'}`"
+        @click="jobsBoardClick"
+        :disabled="!!speech || !unlockedJobsBoard"
       >
         Job's Board
       </button>
       <button
-        :class="`cleodores-option${
-          dataFile.unlocked('cleodores/marketplace') ? '' : ' disabled'
-        }`"
-        :disabled="!dataFile.unlocked('cleodores/marketplace')"
+        :class="`cleodores-option${unlockedMarket ? '' : ' disabled'}`"
+        :disabled="!!speech || !unlockedMarket"
       >
         Marketplace
       </button>
       <button
-        :class="`cleodores-option${
-          dataFile.unlocked('cleodores/guardsTower') ? '' : ' disabled'
-        }`"
-        :disabled="!dataFile.unlocked('cleodores/guardsTower')"
+        :class="`cleodores-option${unlockedGuard ? '' : ' disabled'}`"
+        :disabled="!!speech || !unlockedGuard"
       >
         Guard's Tower
       </button>
       <button
-        :class="`cleodores-option${
-          dataFile.unlocked('cleodores/cityGate') ? '' : ' disabled'
-        }`"
-        :disabled="!dataFile.unlocked('cleodores/cityGate')"
+        :class="`cleodores-option${unlockedCityGate ? '' : ' disabled'}`"
+        @click="cityGateClick"
+        :disabled="!!speech || !unlockedCityGate"
       >
         City Gate
       </button>
       <button
-        :class="`cleodores-option${
-          dataFile.unlocked('cleodores/church') ? '' : ' disabled'
-        }`"
-        :disabled="!dataFile.unlocked('cleodores/church')"
+        :class="`cleodores-option${unlockedChurch ? '' : ' disabled'}`"
+        :disabled="!!speech || !unlockedChurch"
       >
         Church
       </button>
+      <section
+        id="jobs-board"
+        v-if="showJobsBoard"
+      >
+        <button
+          id="close-jobs-board"
+          @click="showJobsBoard = false"
+        >
+          Close
+        </button>
+        <h2>Local Jobs</h2>
+        <ul id="jobs-list">
+          <li v-for="item in availableQuests">
+            <div class="job-note-pin" />
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+            <p>Reward: {{ item.reward }}</p>
+          </li>
+        </ul>
+      </section>
+      <section
+        id="city-gate"
+        v-if="showCityGate"
+      ></section>
     </main>
   </section>
 </template>
 
 <script lang="ts">
-import { gameData } from "../../../types.d";
-import { MercGuild } from "../../gameLogic/Cleodores";
+import BackButton from "../../parts/BackButton.vue";
+import SpeechBox from "../../parts/SpeechBox.vue";
+
+import { gameData, locationActionT, questT, jsonDataT } from "../../../types.d";
+import { numberToCoin } from "../../utils";
 
 export default {
   name: "Cleodores",
   components: {
     BackButton,
+    SpeechBox,
   },
   props: {
     dataFile: {
       type: gameData,
       required: true,
     },
+    gameFiles: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
       speech: false,
+      showJobsBoard: false,
+      availableQuests: [],
+      afterSpeech: [],
+      showCityGate: false,
     } as {
       speech: false | Array<{ speaker: string; text: string }>;
+      showJobsBoard: boolean;
+      availableQuests: Array<{
+        title: string;
+        description: string;
+        reward: string;
+        id: string;
+        type: string;
+      }>;
+      afterSpeech: Array<{ func: Function; remove: boolean }>;
+      showCityGate: boolean;
     };
+  },
+  computed: {
+    unlockedMayor() {
+      return this.dataFile.unlocked(
+        this.gameFiles as jsonDataT,
+        "migi/kales/cleodores/cleodores/mayorsOffice"
+      );
+    },
+    unlockedMercGuild() {
+      return this.dataFile.unlocked(
+        this.gameFiles as jsonDataT,
+        "migi/kales/cleodores/cleodores/mercenaryGuild"
+      );
+    },
+    unlockedJobsBoard() {
+      return this.dataFile.unlocked(
+        this.gameFiles as jsonDataT,
+        "migi/kales/cleodores/cleodores/jobsBoard"
+      );
+    },
+    unlockedMarket() {
+      return this.dataFile.unlocked(
+        this.gameFiles as jsonDataT,
+        "migi/kales/cleodores/cleodores/marketplace"
+      );
+    },
+    unlockedGuard() {
+      return this.dataFile.unlocked(
+        this.gameFiles as jsonDataT,
+        "migi/kales/cleodores/cleodores/guardsTower"
+      );
+    },
+    unlockedCityGate() {
+      return this.dataFile.unlocked(
+        this.gameFiles as jsonDataT,
+        "migi/kales/cleodores/cleodores/cityGate"
+      );
+    },
+    unlockedChurch() {
+      return this.dataFile.unlocked(
+        this.gameFiles as jsonDataT,
+        "migi/kales/cleodores/cleodores/church"
+      );
+    },
   },
   methods: {
     backClick() {
       this.dataFile.backTab();
     },
     mercenaryGuildClick() {
-      console.log(this.dataFile.testingtesting);
-      this.speech = MercGuild(this.dataFile);
+      this.handleType(
+        this.dataFile.goToLocation(
+          this.gameFiles as jsonDataT,
+          "migi/kales/cleodores/cleodores/mercenaryGuild"
+        )
+      );
     },
+    jobsBoardClick() {
+      this.handleType(
+        this.dataFile.goToLocation(
+          this.gameFiles as jsonDataT,
+          "migi/kales/cleodores/cleodores/jobsBoard"
+        )
+      );
+    },
+    cityGateClick() {},
     stopTalking() {
       this.speech = false;
-      this.dataFile.unlock("cleodores/jobsBoard");
+      this.afterSpeech.forEach(({ func }) => func());
+      this.afterSpeech = this.afterSpeech.filter(({ remove }) => !remove);
+    },
+    handleType(obj: locationActionT) {
+      if (obj.type === "speech") {
+        this.speech = obj.talk;
+      } else if (obj.type === "quest") {
+        this.availableQuests = obj.quests
+          .concat(obj.specialQuests)
+          .map((questId) => {
+            const quest: questT = (this.gameFiles as jsonDataT).quests[questId];
+            return {
+              title: quest.title,
+              description: quest.description,
+              reward: numberToCoin(quest.reward),
+              id: questId,
+              type: quest.type,
+            };
+          });
+        this.showJobsBoard = true;
+      }
     },
   },
 };
@@ -158,5 +265,61 @@ main {
   color: rgb(139, 59, 224, 0.5);
   border: 1px solid rgb(139, 59, 224, 0.5);
   cursor: not-allowed;
+}
+#jobs-board {
+  box-sizing: border-box;
+  position: absolute;
+  top: 25%;
+  left: 10%;
+  width: 80%;
+  height: 60%;
+  padding: 1em;
+  border: 4px solid rgb(217, 163, 102);
+  border-radius: 2em;
+  background-image: url("../../assets/jobs-board.jpg");
+  color: white;
+  font-size: 1.2em;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  text-align: center;
+}
+h2 {
+  margin-top: 0.5em;
+}
+#jobs-list {
+  padding: 0;
+  margin: 0;
+}
+#jobs-list > li {
+  box-sizing: border-box;
+  background-image: url("../../assets/job-note.jpg");
+  margin: 0.5em;
+  padding: 0.5em;
+  border-radius: 1em;
+  list-style: none;
+}
+#jobs-list > li > p,
+#jobs-list > li > h3 {
+  padding: 0;
+  margin: 0.5em 0 0.5em 0;
+  color: black;
+}
+.job-note-pin {
+  position: absolute;
+  margin: -0.25em 0 0 -0.25em;
+  background-color: black;
+  border: 0.3em solid grey;
+  border-radius: 100%;
+  height: 0.65em;
+  width: 0.65em;
+}
+#close-jobs-board {
+  width: 50%;
+  height: fit-content;
+  color: white;
+  font-size: 1.1em;
+  font-weight: bold;
+  border-radius: 1em;
+  background: rgba(81, 182, 41, 0.3);
 }
 </style>

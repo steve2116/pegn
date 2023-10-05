@@ -34,7 +34,7 @@ export default {
       this.class = { black: "white", white: "black" }[this.class] as
         | "black"
         | "white";
-    }, 1250);
+    }, 1250) as unknown as number;
   },
   unmounted() {
     clearInterval(this.timer);

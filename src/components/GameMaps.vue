@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-import BackButton from "../parts/BackButton.vue";
-</script>
-
 <template>
   <section id="game-maps">
     <BackButton :backTab="backClick" />
@@ -29,10 +25,15 @@ import BackButton from "../parts/BackButton.vue";
 </template>
 
 <script lang="ts">
+import BackButton from "../parts/BackButton.vue";
+
 import { gameData } from "../../types.d";
 
 export default {
   name: "GameMaps",
+  components: {
+    BackButton,
+  },
   props: {
     dataFile: {
       type: gameData,
