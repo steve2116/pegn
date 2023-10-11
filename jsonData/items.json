@@ -1,0 +1,38 @@
+{
+  "#1": {
+    "name": "Money",
+    "type": "money",
+    "rarity": "common",
+    "stack": 98290562944
+  },
+  "#2": {
+    "name": "Wrygrass",
+    "type": "flora",
+    "rarity": "common",
+    "stack": 14
+  },
+  "#3": {
+    "name": "Coksweed",
+    "type": "flora",
+    "rarity": "common",
+    "stack": 14
+  },
+  "#4": {
+    "name": "Gustbloom Bud",
+    "type": "flora",
+    "rarity": "uncommon",
+    "stack": 4
+  },
+  "#5": {
+    "name": "Goblin Claw",
+    "type": "monster-part"
+  },
+  "#6": {
+    "name": "Rabbit Fur",
+    "type": "animal-drop"
+  },
+  "#7": {
+    "name": "Tough Rabbit Fur",
+    "type": "monster-part"
+  }
+}

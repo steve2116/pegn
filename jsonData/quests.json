@@ -1,0 +1,32 @@
+{
+  "#000001": {
+    "title": "Collect Wrygrass",
+    "description": "Collect 5 bundles of wrygrass. They can be commonly seen growing in the fields outside the city gates",
+    "reward": 7,
+    "type": "collect"
+  },
+  "#000002": {
+    "title": "Collect Coksweed",
+    "description": "Collect 9 bundles of coksweed. They can be commonly seen growing in the fields outside the city gates",
+    "reward": 15,
+    "type": "collect"
+  },
+  "#000003": {
+    "title": "Collect Gustbloom",
+    "description": "Collect 21 gustbloom buds. They are found growing on the sides of cliffs and other areas with high wind",
+    "reward": 294,
+    "type": "collect"
+  },
+  "#000004": {
+    "title": "Subjugate Goblins",
+    "description": "Goblins are a nuisance to the area. They can be found roaming near roads around the city. Eliminate 14 of them",
+    "reward": 112,
+    "type": "subjugate"
+  },
+  "#000005": {
+    "title": "Eliminate Bandits",
+    "description": "A group of bandits have been harassing merchants near the city. Destroy their group. (Extra rewards available for capturing bandits alive)",
+    "reward": 150234,
+    "type": "bounty"
+  }
+}

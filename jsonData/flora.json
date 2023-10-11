@@ -1,0 +1,23 @@
+{
+  "#1": {
+    "name": "Wrygrass",
+    "rarity": "common",
+    "yields": {
+      "#2": 1
+    }
+  },
+  "#2": {
+    "name": "Coksweed",
+    "rarity": "common",
+    "yields": {
+      "#3": 1
+    }
+  },
+  "#3": {
+    "name": "Gustbloom",
+    "rarity": "uncommon",
+    "yields": {
+      "#4": 1
+    }
+  }
+}

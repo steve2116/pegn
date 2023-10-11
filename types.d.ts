@@ -46,15 +46,18 @@ interface gameDataGameT {
 export type locationActionT =
   | {
       type: "none";
+      afterFuncs: Array<{ func: () => void; remove: boolean }>;
     }
   | {
       type: "speech";
       talk: Array<{ speaker: string; text: string }>;
+      afterFuncs: Array<{ func: () => void; remove: boolean }>;
     }
   | {
       type: "quest";
       quests: Array<string>;
       specialQuests: Array<string>;
+      afterFuncs: Array<{ func: () => void; remove: boolean }>;
     };
 
 export class gameData {
@@ -201,28 +204,60 @@ export class gameData {
       }),
       { user: this.game.locations, game: gameDataFiles.locations }
     );
-    if (user === null || game === null) return { type: "none" };
+    if (user === null || game === null)
+      return {
+        type: "none",
+        afterFuncs: [
+          { func: () => console.log("Location not found"), remove: true },
+        ],
+      };
     else {
-      const data = { ...game.data[game.max < user ? game.max : user] };
-      data.unlocks.forEach((path) => {
-        path.split("/").reduce((acc, curr, ind, arr) => {
-          if (ind === arr.length - 1) {
-            acc[curr]++;
-            return acc[curr];
-          }
-          return acc[curr];
-        }, this.game.locations);
-      });
-      data.progress.forEach((path) => {
-        path.split("/").reduce((acc, curr, ind, arr) => {
-          if (ind === arr.length - 1) {
-            const [place, increment]: [string, string] = curr.split("#");
-            acc[place] += parseInt(increment);
-            return acc[place];
-          } else return acc[curr];
-        }, this.game.locations);
-      });
-      // data.relocks.forEach((path) => {});
+      const data = {
+        ...game.data[game.max < user ? game.max : user],
+        afterFuncs: [],
+      };
+      data.afterFuncs.push(
+        ...data.unlocks.reduce(
+          (acc, path) =>
+            acc.concat([
+              {
+                func: () => {
+                  path.split("/").reduce((acc, curr, ind, arr) => {
+                    if (ind === arr.length - 1 && acc[curr] === -1) {
+                      acc[curr]++;
+                      return;
+                    }
+                    return acc[curr];
+                  }, this.game.locations);
+                },
+                remove: true,
+              },
+            ]),
+          []
+        )
+      );
+      data.afterFuncs.push(
+        ...data.progress.reduce(
+          (acc, path) =>
+            acc.concat([
+              {
+                func: () => {
+                  path.split("/").reduce((acc, curr, ind, arr) => {
+                    if (ind === arr.length - 1) {
+                      const [place, increment]: [string, string] =
+                        curr.split("#");
+                      acc[place] += parseInt(increment);
+                      return acc[place];
+                    } else return acc[curr];
+                  }, this.game.locations);
+                },
+                remove: true,
+              },
+            ]),
+          []
+        )
+      );
+      // data.afterFuncs.push(...data.relocks.reduce((acc, path) => acc.concat([{ func: () => {}, remove: true }]), []));
       if (data.type === "quests") {
         let quests: Array<string> = [];
         locationString
@@ -236,10 +271,11 @@ export class gameData {
           type: "quest",
           quests,
           specialQuests: data.specialQuests,
+          afterFuncs: data.afterFuncs,
         };
       } else if (data.type === "speech") {
-        return { type: "speech", talk: data.talk };
-      } else return { type: "none" };
+        return { type: "speech", talk: data.talk, afterFuncs: data.afterFuncs };
+      } else return { type: "none", afterFuncs: data.afterFuncs };
     }
   }
 
@@ -323,16 +359,6 @@ class tabStack {
     this.tabs = [];
   }
 }
-
-// enum Locations {
-//   kcea = "Cleodores Earldom",
-//   kcle = "Cleodores",
-// }
-
-// enum Kingdoms {
-//   na = "None",
-//   k = "Kingdom of Kales",
-// }
 
 // enum Weather {
 //   rain = "Rainy",
@@ -449,7 +475,7 @@ export interface questT {
   title: string;
   description: string;
   reward: number;
-  type: string;
+  type: "collect" | "subjugate" | "bounty";
 }
 
 interface gameDataInfo {
@@ -457,13 +483,26 @@ interface gameDataInfo {
   type: string;
   weather: string | null;
   environment: string | null;
-  population: number;
+  population: number | null;
   religions: Array<string>;
   occupiedBy: string | null;
   ruler: string | null;
   rulingType: string | null;
+  bordering: Array<string>;
+  travel: Array<string>;
   quests: Array<string>;
 }
+
+type biomesT = "forest" | "plain";
+
+type rarityT =
+  | "common"
+  | "uncommon"
+  | "rare"
+  | "special"
+  | "legendary"
+  | "mythic"
+  | "unique";
 
 export interface jsonDataT {
   locations: {
@@ -495,6 +534,43 @@ export interface jsonDataT {
     };
     penin: { info: gameDataInfo };
     isles: { info: gameDataInfo };
+    travel: {
+      [id: string]: {
+        info: {
+          name: string;
+          type: biomesT;
+        };
+        encounterRates: {
+          [mobId: string]: {
+            chance: number;
+            // N - noise, T - threat
+            minN: number;
+            maxN: number;
+            minT: number;
+            maxT: number;
+          };
+        };
+        averageLevel: number;
+        drops: {
+          [itemId: string]: {
+            [amount: string]: number;
+          };
+        };
+        creatures: {
+          [name: string]: {
+            id: string;
+          };
+        };
+        flora: {
+          [name: string]: {
+            id: string;
+            getChance: {
+              [quantity: string]: number;
+            };
+          };
+        };
+      };
+    };
   };
   quests: {
     [questId: string]: questT;
@@ -502,5 +578,69 @@ export interface jsonDataT {
   loadingMessages: {
     dyk: Array<string>;
     tips: Array<string>;
+    funFact: Array<string>;
+  };
+  creatures: {
+    /* 
+      custom regex for stats strings
+      a-b+c-d*e-f
+      a = min base stat; b = max base stat
+      c = min growth stat; d = max growth stat
+      e = min base stat growth multiplier; f = max base stat growth multiplier
+      eg. 1-5+2-3*1-1.1 with a level of 10
+      base stat between 1 and 5, lets choose 3
+      stat growth between 2 and 3. lets choose 2,
+      a multipler of between 1 and 1.1, lets choose 1.05
+      the stat would have a value of (3 + 2 * 10) * 1.05^10 = 37
+      (all values are min(floor(value),1))
+      ie, the weakest would be 21, the strongest 90
+      if a number doesn't appear, it is there in spirit
+      1-2+1-2 = 1-2+1-2*1-1
+      2*1.2 = 2-2+0-0*1.2-1.2
+      +2 = 0-0+2-2*1-1
+      etc.
+    */
+    monsters: {
+      [id: string]: {
+        name: string;
+        drops: {
+          [itemId: string]: {
+            [amount: string]: number;
+          };
+        };
+        stats: Record<stats, string>;
+      };
+    };
+    animals: {
+      [id: string]: {
+        name: string;
+        drops: {
+          [itemId: string]: {
+            [amount: string]: number;
+          };
+        };
+      };
+    };
+    races: {
+      [id: string]: {
+        name: string;
+      };
+    };
+  };
+  flora: {
+    [id: string]: {
+      name: string;
+      rarity: rarityT;
+      yields: {
+        [itemId: string]: number;
+      };
+    };
+  };
+  items: {
+    [id: string]: {
+      name: string;
+      rarity: rarityT;
+      stack: number;
+    };
   };
 }

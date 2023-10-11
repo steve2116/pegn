@@ -1,0 +1,442 @@
+{
+  "hidar": {
+    "info": {
+      "name": "Hidar",
+      "type": "Continent",
+      "weather": null,
+      "environment": null,
+      "population": null,
+      "religions": [],
+      "occupiedBy": null,
+      "ruler": null,
+      "rulingType": null,
+      "bordering": [],
+      "travel": [],
+      "quests": []
+    }
+  },
+  "midgar": {
+    "info": {
+      "name": "Midgar",
+      "type": "Continent",
+      "weather": null,
+      "environment": null,
+      "population": null,
+      "religions": [],
+      "occupiedBy": null,
+      "ruler": null,
+      "rulingType": null,
+      "bordering": [],
+      "travel": [],
+      "quests": []
+    }
+  },
+  "migi": {
+    "info": {
+      "name": "Migi",
+      "type": "Continent",
+      "weather": null,
+      "environment": null,
+      "population": 1000000,
+      "religions": ["Hellenic"],
+      "occupiedBy": null,
+      "ruler": null,
+      "rulingType": null,
+      "bordering": [],
+      "travel": [],
+      "quests": []
+    },
+    "kales": {
+      "info": {
+        "name": "Kingdom of Kales",
+        "type": "Kingdom",
+        "weather": null,
+        "environment": null,
+        "population": 100000,
+        "religions": [],
+        "occupiedBy": null,
+        "ruler": "Kelius Kales",
+        "rulingType": "Monarchy",
+        "bordering": [],
+        "travel": [],
+        "quests": []
+      },
+      "cleodores": {
+        "info": {
+          "name": "Cleodores Earldom",
+          "type": "Faction",
+          "weather": "Sunny",
+          "environment": null,
+          "population": 15000,
+          "religions": [],
+          "occupiedBy": "Humans",
+          "ruler": "Nsyphus Cleodores",
+          "rulingType": "Noble House",
+          "bordering": [],
+          "travel": [],
+          "quests": []
+        },
+        "cleodores": {
+          "info": {
+            "name": "Cleodores",
+            "type": "City",
+            "weather": "Sunny",
+            "environment": "forest",
+            "population": 7400,
+            "religions": [],
+            "occupiedBy": "Humans",
+            "ruler": "Nsyphus Cleodores",
+            "rulingType": "Noble House",
+            "bordering": [],
+            "travel": ["#1", "#2"],
+            "quests": ["#000001", "#000002", "#000003", "#000004", "#000005"]
+          },
+          "mayorsOffice": {
+            "max": -1,
+            "unlockedAt": ["migi/kales/cleodores/cleodores/mayorsOffice-1"],
+            "data": []
+          },
+          "mercenaryGuild": {
+            "max": 3,
+            "unlockedAt": [],
+            "data": [
+              {
+                "type": "speech",
+                "talk": [
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Welcome to the Mercenary Guild!"
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "We have a variety of jobs available for you to take."
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "It seems you have already been signed up, so you can get started immediately."
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Please take a look at our jobs board."
+                  }
+                ],
+                "unlocks": ["migi/kales/cleodores/cleodores/jobsBoard"],
+                "progress": ["migi/kales/cleodores/cleodores/mercenaryGuild#1"],
+                "relocks": []
+              },
+              {
+                "type": "speech",
+                "talk": [
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Oh, I almost forgot. I don't see you carrying anything so you can get a free weapon from the Guard's Tower."
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Make sure you pick it up before you leave the city. It can get pretty dangerous if you don't know what you're doing."
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Here's a letter of recommendation, just show it to a guard at the Tower and they'll let you pick a weapon."
+                  }
+                ],
+                "unlocks": ["migi/kales/cleodores/cleodores/guardsTower"],
+                "progress": [
+                  "migi/kales/cleodores/cleodores/mercenaryGuild#2",
+                  "migi/kales/cleodores/cleodores/guardsTower#1"
+                ],
+                "relocks": []
+              },
+              {
+                "type": "speech",
+                "talk": [
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Hello, how can I help... Oh. Hello again."
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Yes, it seems I forgot to mention that. Sorry about that. The guards here are nice people so won't want you to unnecessarily endanger yourself. So they give out free weapons to budding mercenaries with our recommendation."
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Seeing as you haven't collected one before and don't have a weapon of your own, you are elligible. Here you are. Don't forget you can always change weapons in the future, so pick a weapon that's more useful than one you see yourself using in the future."
+                  },
+                  {
+                    "speaker": "Receptionist",
+                    "text": "I hope to see you again soon. *smiles*"
+                  }
+                ],
+                "unlocks": [],
+                "progress": [
+                  "migi/kales/cleodores/cleodores/mercenaryGuild#1",
+                  "migi/kales/cleodores/cleodores/guardsTower#1"
+                ],
+                "relocks": []
+              },
+              {
+                "type": "speech",
+                "talk": [
+                  {
+                    "speaker": "Receptionist",
+                    "text": "Please take a look at our jobs board."
+                  }
+                ],
+                "unlocks": [],
+                "progress": [],
+                "relocks": []
+              }
+            ]
+          },
+          "jobsBoard": {
+            "max": 2,
+            "unlockedAt": ["migi/kales/cleodores/cleodores/mercenaryGuild-1"],
+            "data": [
+              {
+                "type": "speech",
+                "talk": [
+                  {
+                    "speaker": "Information Note",
+                    "text": "Here you can find quests for heroes of all strengths."
+                  },
+                  {
+                    "speaker": "Information Note",
+                    "text": "Each quest has three sections:"
+                  },
+                  {
+                    "speaker": "Information Note",
+                    "text": "First, Title. This will give you an idea of what the quest will entail. Use this to find a quest that interests you."
+                  },
+                  {
+                    "speaker": "Information Note",
+                    "text": "Second, Description. This is more in depth, giving details about the quest and what is required to complete it. This should be the first place you look when you decide what quest to take."
+                  },
+                  {
+                    "speaker": "Information Note",
+                    "text": "Lastly, Reward. This is the renumeration you will receive on completion. This is often an indicator of the difficulty and risk of the quest."
+                  },
+                  {
+                    "speaker": "Information Note",
+                    "text": "Please note that while quests are first come first serve, that is no excuse to not be careful on outings."
+                  }
+                ],
+                "unlocks": [],
+                "progress": ["migi/kales/cleodores/cleodores/jobsBoard#1"],
+                "relocks": []
+              },
+              {
+                "type": "quests",
+                "specialQuests": [],
+                "unlocks": ["migi/kales/cleodores/cleodores/cityGate"],
+                "progress": ["migi/kales/cleodores/cleodores/jobsBoard#1"],
+                "relocks": []
+              },
+              {
+                "type": "quests",
+                "specialQuests": [],
+                "unlocks": [],
+                "progress": [],
+                "relocks": []
+              }
+            ]
+          },
+          "marketplace": {
+            "max": -1,
+            "unlockedAt": ["migi/kales/cleodores/cleodores/marketplace-1"],
+            "data": []
+          },
+          "guardsTower": {
+            "max": -1,
+            "unlockedAt": ["migi/kales/cleodores/cleodores/mercenaryGuild-3"],
+            "data": []
+          },
+          "cityGate": {
+            "max": 1,
+            "unlockedAt": ["migi/kales/cleodores/cleodores/jobsBoard-2"],
+            "data": [
+              {
+                "type": "speech",
+                "talk": [
+                  {
+                    "speaker": "City Guard",
+                    "text": "Hey, you must be new. Make sure you have a weapon before you go outside. You never know what you might find out there."
+                  },
+                  {
+                    "speaker": "City Guard",
+                    "text": "If you get a letter of recommendation from the Mercenary Guild, you can pick up something for free from our Tower. I'd advise investing in something of your own if you can afford it though."
+                  },
+                  {
+                    "speaker": "City Guard",
+                    "text": "Come back when you can protect yourself."
+                  }
+                ],
+                "unlocks": [],
+                "progress": [
+                  "migi/kales/cleodores/cleodores/cityGate#1",
+                  "migi/kales/cleodores/cleodores/mercenaryGuild#1"
+                ],
+                "relocks": []
+              },
+              {
+                "type": "speech",
+                "talk": [
+                  {
+                    "speaker": "City Guard",
+                    "text": "Come back when you can protect yourself."
+                  }
+                ],
+                "unlocks": [],
+                "progress": [],
+                "relocks": []
+              }
+            ]
+          },
+          "church": {
+            "max": -1,
+            "unlockedAt": ["migi/kales/cleodores/cleodores/church-1"],
+            "data": []
+          }
+        }
+      }
+    }
+  },
+  "penin": {
+    "info": {
+      "name": "Penin",
+      "type": "Continent",
+      "weather": null,
+      "environment": null,
+      "population": null,
+      "religions": [],
+      "occupiedBy": null,
+      "ruler": null,
+      "rulingType": null,
+      "bordering": [],
+      "travel": [],
+      "quests": []
+    }
+  },
+  "isles": {
+    "info": {
+      "name": "Isles",
+      "type": "Continent",
+      "weather": null,
+      "environment": null,
+      "population": null,
+      "religions": [],
+      "occupiedBy": null,
+      "ruler": null,
+      "rulingType": null,
+      "bordering": [],
+      "travel": [],
+      "quests": []
+    }
+  },
+  "travel": {
+    "#1": {
+      "info": {
+        "name": "Generic Forest",
+        "type": "forest"
+      },
+      "encounterRates": {
+        "#1": {
+          "chance": 0.05,
+          "minN": 500,
+          "maxN": 5000,
+          "minT": 0,
+          "maxT": 2.5
+        },
+        "#2": {
+          "chance": 0.6,
+          "minN": 1000,
+          "maxN": 3500,
+          "minT": 0.15,
+          "maxT": 1.5
+        }
+      },
+      "averageLevel": 1,
+      "drops": {},
+      "creatures": {
+        "deer": {
+          "id": "#1"
+        },
+        "rabbit": {
+          "id": "#2"
+        }
+      },
+      "flora": {
+        "gustbloom": {
+          "id": "#3",
+          "getChance": {
+            "0": 0.9,
+            "1": 0.045,
+            "2": 0.02,
+            "3": 0.02,
+            "4": 0.01,
+            "5": 0.005
+          }
+        }
+      }
+    },
+    "#2": {
+      "info": {
+        "name": "Generic Plain",
+        "type": "plain"
+      },
+      "encounterRates": {
+        "#1": {
+          "chance": 0.5,
+          "minN": 750,
+          "maxN": 5000,
+          "minT": 0,
+          "maxT": 3
+        },
+        "#2": {
+          "chance": 0.1,
+          "minN": 1500,
+          "maxN": 4000,
+          "minT": 0.1,
+          "maxT": 2
+        }
+      },
+      "averageLevel": 1,
+      "drops": {},
+      "creatures": {
+        "rabbit": {
+          "id": "#2"
+        },
+        "fox": {
+          "id": "#3"
+        }
+      },
+      "flora": {
+        "wrygrass": {
+          "id": "#1",
+          "getChance": {
+            "0": 0.1,
+            "1": 0.6,
+            "2": 0.2,
+            "3": 0.1
+          }
+        },
+        "coksweed": {
+          "id": "#2",
+          "getChance": {
+            "0": 0.05,
+            "1": 0.5,
+            "2": 0.3,
+            "3": 0.15
+          }
+        },
+        "gustbloom": {
+          "id": "#3",
+          "getChance": {
+            "0": 0.95,
+            "1": 0.045,
+            "2": 0.005
+          }
+        }
+      }
+    }
+  }
+}

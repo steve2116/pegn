@@ -51,5 +51,10 @@ export async function fetchGameDataFiles(): Promise<jsonDataT> {
     loadingMessages: await fetch("../jsonData/loadingMessages.json").then(
       (res) => res.json()
     ),
+    creatures: await fetch("../jsonData/creatures.json").then((res) =>
+      res.json()
+    ),
+    flora: await fetch("../jsonData/flora.json").then((res) => res.json()),
+    items: await fetch("../jsonData/items.json").then((res) => res.json()),
   };
 }

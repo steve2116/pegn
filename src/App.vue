@@ -15,7 +15,7 @@
       v-if="currentTab === 'login-menu'"
       :data-file="(dataFile as gameData)"
       :game-files="(gameFiles as jsonDataT)"
-      @change-loading="(e: boolean) => loading = e"
+      @change-loading="changeLoading"
     />
     <CharacterCreation
       v-if="currentTab === 'character-creation'"
@@ -37,7 +37,7 @@
     <!-- loading -->
     <LoadingScreen
       v-if="loading"
-      message="Did you know, more people are killed by stairs than sharks per year?"
+      :message="loadingMessage"
     />
     <!-- maps -->
     <Cleodores
@@ -80,6 +80,7 @@ export default {
       gameFiles: {},
       loading: false,
       timer: 0,
+      loadingMessage: "Loading all your juicy game data 😋",
     } as {
       dataFile: gameData;
       saving: boolean;
@@ -87,6 +88,7 @@ export default {
       gameFiles: jsonDataT | Record<string, never>;
       loading: boolean;
       timer: number;
+      loadingMessage: string;
     };
   },
   computed: {
@@ -116,6 +118,21 @@ export default {
           this.saveDivCounter++;
         }, 750);
       }
+    },
+    changeLoading(e: boolean) {
+      if (
+        e &&
+        Object.prototype.hasOwnProperty.call(this.gameFiles, "loadingMessages")
+      ) {
+        const allMessages = this.gameFiles.loadingMessages.dyk.concat(
+          this.gameFiles.loadingMessages.tips,
+          this.gameFiles.loadingMessages.funFact
+        );
+        const total = allMessages.length;
+        this.loadingMessage =
+          allMessages[Math.round(Math.random() * (total - 1))];
+      }
+      this.loading = e;
     },
   },
 };

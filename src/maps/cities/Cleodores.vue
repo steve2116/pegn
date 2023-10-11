@@ -1,10 +1,15 @@
 <template>
   <section id="map-city-cleodores">
-    <BackButton :backTab="backClick" />
+    <BackButton :backTab="() => dataFile.backTab()" />
     <SpeechBox
       v-if="!!speech"
       :textCycle="speech"
-      :onComplete="stopTalking"
+      :onComplete="
+        () => {
+          speech = false;
+          stopAction();
+        }
+      "
     />
 
     <header>
@@ -62,7 +67,12 @@
       >
         <button
           id="close-jobs-board"
-          @click="showJobsBoard = false"
+          @click="
+            () => {
+              showJobsBoard = false;
+              stopAction();
+            }
+          "
         >
           Close
         </button>
@@ -112,7 +122,7 @@ export default {
       speech: false,
       showJobsBoard: false,
       availableQuests: [],
-      afterSpeech: [],
+      afterAction: [],
       showCityGate: false,
     } as {
       speech: false | Array<{ speaker: string; text: string }>;
@@ -124,7 +134,7 @@ export default {
         id: string;
         type: string;
       }>;
-      afterSpeech: Array<{ func: Function; remove: boolean }>;
+      afterAction: Array<{ func: Function; remove: boolean }>;
       showCityGate: boolean;
     };
   },
@@ -173,9 +183,6 @@ export default {
     },
   },
   methods: {
-    backClick() {
-      this.dataFile.backTab();
-    },
     mercenaryGuildClick() {
       this.handleType(
         this.dataFile.goToLocation(
@@ -192,11 +199,17 @@ export default {
         )
       );
     },
-    cityGateClick() {},
-    stopTalking() {
-      this.speech = false;
-      this.afterSpeech.forEach(({ func }) => func());
-      this.afterSpeech = this.afterSpeech.filter(({ remove }) => !remove);
+    cityGateClick() {
+      this.handleType(
+        this.dataFile.goToLocation(
+          this.gameFiles as jsonDataT,
+          "migi/kales/cleodores/cleodores/cityGate"
+        )
+      );
+    },
+    stopAction() {
+      this.afterAction.forEach(({ func }) => func());
+      this.afterAction = this.afterAction.filter(({ remove }) => !remove);
     },
     handleType(obj: locationActionT) {
       if (obj.type === "speech") {
@@ -216,6 +229,7 @@ export default {
           });
         this.showJobsBoard = true;
       }
+      this.afterAction = this.afterAction.concat(obj.afterFuncs);
     },
   },
 };
